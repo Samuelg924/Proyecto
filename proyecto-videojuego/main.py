@@ -3,7 +3,7 @@ from sys import exit
 
 class Escenario:
 	def __init__(self):
-		self.ground = pygame.transform.scale2x(pygame.image.load("resources/grass_ground.png").convert_alpha())
+		self.ground = pygame.transform.scale2x(pygame.image.load("proyecto-videojuego/resources/grass_ground.png").convert_alpha())
 
 	def draw_ground(self):
 		screen.blit(self.ground, (0, 750))
