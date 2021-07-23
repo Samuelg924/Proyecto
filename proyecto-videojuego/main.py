@@ -6,7 +6,7 @@ class Escenario:
 		self.ground = pygame.transform.scale2x(pygame.image.load("proyecto-videojuego/resources/grass_ground.png").convert_alpha())
 
 	def draw_ground(self):
-		screen.blit(self.ground, (0, 750))
+		screen.blit(self.ground, (0, 700))
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 800))
