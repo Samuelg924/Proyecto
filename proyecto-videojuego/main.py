@@ -10,8 +10,9 @@ class Main:
 		self.escenario.draw_scenario()
 		self.character.draw_character()
 
-	def update(self):
-		self.escenario.move_scenario()
+	def move(self, direction):
+		self.escenario.move_scenario(direction)
+		self.character.move_character(direction)
 
 class Escenario:
 	def __init__(self):
@@ -39,37 +40,31 @@ class Escenario:
 
 			return self.ground, self.background
 
-	def move_scenario(self, status, direction):
-		if status == True:
-			if direction == 1:
-				self.floor_x_pos -= 0.9
-				self.background_x_pos -= 0.4
-			if direction == -1:
-				self.floor_x_pos += 0.9
-				self.background_x_pos += 0.4
+	def move_scenario(self, direction):
+		if direction[0] == 1:
+			self.floor_x_pos -= 0.9
+			self.background_x_pos -= 0.4
+		if direction[0] == -1:
+			self.floor_x_pos += 0.9
+			self.background_x_pos += 0.4
 
 class Character:
 	def __init__(self):
 		self.character = pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha()
 		self.character_x_pos = 250
-		# self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, 767))
 
 	def draw_character(self):
-		screen.blit(self.character, (self.character_x_pos, 707))
+		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, 767))
+		screen.blit(self.character, self.character_rect)
 
-	def move_character(self, status, direction):
-		if status == True:
-			if direction == 1:
-				self.character_x_pos += 1
+	def move_character(self, direction):
+		if direction[0] == 1:
+			self.character_x_pos += 1
 			
-			if direction == -1:
-				self.character_x_pos -= 1
+		if direction[0] == -1:
+			self.character_x_pos -= 1
 
-scenario_status = False
-scenario_direction = 0
-
-charater_status = False
-character_direction = 0
+direction = [0, 0]
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 800))
@@ -85,23 +80,26 @@ while True:
 			exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_d:
-				scenario_status, scenario_direction = True, 1
-				charater_status, charater_direction = True, 1
+				direction[0] = 1	
 			if event.key == pygame.K_a:
-				scenario_status, scenario_direction = True, -1
-				charater_status, charater_direction = True, -1
+				direction[0] = -1	
+			if event.key == pygame.K_w:
+				direction[1] = -1
+			if event.key == pygame.K_s:
+				direction[1] = 1
 			
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_d:
-				scenario_status, scenario_direction = False, 0
-				charater_status, charater_direction = False, 0
+				direction[0] = 0
 			if event.key == pygame.K_a:
-				scenario_status, scenario_direction = False, 0
-				charater_status, charater_direction = False, 0
+				direction[0] = 0
+			if event.key == pygame.K_s:
+				direction[1] = 0
+			if event.key == pygame.K_w:
+				direction[1] = 0
 	
 	main.draw_elemets()
-	main.escenario.move_scenario(scenario_status, scenario_direction)
-	main.character.move_character(charater_status, character_direction)
-
+	main.move(direction)
+	
 	pygame.display.update()
 	clock.tick(60)

@@ -96,7 +96,7 @@ SPAWNPIPE = pygame.USEREVENT
 pygame.time.set_timer(SPAWNPIPE, 1200)
 pipe_height = [400, 600, 800]
 
-game_over_surface = pygame.transform.scale2x(pygame.image.load('assets/message.png').convert_alpha())
+game_over_surface = pygame.transform.scale2x(pygame.image.load('assets/message.png'))
 game_over_rect = game_over_surface.get_rect(center = (288, 500))
 
 # flap_sound = pygame.mixer.Sound('sound/sfx_wing.wav')
