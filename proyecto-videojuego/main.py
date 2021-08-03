@@ -9,15 +9,20 @@ class Main:
 	def draw_elemets(self):
 		self.escenario.draw_scenario()
 		self.character.draw_character()
+		self.escenario.draw_floor()
 
 	def move(self, direction):
 		self.escenario.move_scenario(direction)
 		self.character.move_character(direction)
 
+	def check_wall_collision(self):
+		pass
+
 class Escenario:
 	def __init__(self):
 		self.city_ground = pygame.image.load("proyecto-videojuego/resources/City_ground2.png").convert_alpha()
 		self.city_background = pygame.image.load("proyecto-videojuego/resources/Background2.png").convert_alpha()
+		self.wooden_floor = pygame.image.load("proyecto-videojuego/resources/Wooden_floor.png").convert_alpha()
 		self.floor_x_pos = 0
 		self.background_x_pos = 0
 
@@ -48,23 +53,36 @@ class Escenario:
 			self.floor_x_pos += 0.9
 			self.background_x_pos += 0.4
 
+	def draw_floor(self):
+		for row in range(floor_cells):
+			self.floor_rect = self.wooden_floor.get_rect(topleft = (row * 300, 0))
+			screen.blit(self.wooden_floor, self.floor_rect)
+
 class Character:
 	def __init__(self):
-		self.character = pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha()
+		self.character = pygame.transform.scale2x(pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha())
 		self.character_x_pos = 250
+		self.character_y_pos = 767
 
 	def draw_character(self):
-		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, 767))
+		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, self.character_y_pos))
 		screen.blit(self.character, self.character_rect)
 
 	def move_character(self, direction):
 		if direction[0] == 1:
-			self.character_x_pos += 1
+			self.character_x_pos += 2
 			
 		if direction[0] == -1:
-			self.character_x_pos -= 1
+			self.character_x_pos -= 2
+
+		if direction[1] == 1:
+			self.character_y_pos += 2
+		
+		if direction[1] == -1:
+			self.character_y_pos -= 2
 
 direction = [0, 0]
+floor_cells = 5
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 800))
@@ -100,6 +118,6 @@ while True:
 	
 	main.draw_elemets()
 	main.move(direction)
-	
+
 	pygame.display.update()
 	clock.tick(60)
