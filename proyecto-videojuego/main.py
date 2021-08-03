@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from sys import exit
 
 class Main:
@@ -9,32 +9,49 @@ class Main:
 	def draw_elemets(self):
 		self.escenario.draw_scenario()
 		self.character.draw_character()
-		self.escenario.draw_floor()
+		self.globe_dialog = pygame.image.load("proyecto-videojuego/resources/globe_dialog.png").convert_alpha()
 
 	def move(self, direction):
 		self.escenario.move_scenario(direction)
 		self.character.move_character(direction)
 
 	def check_wall_collision(self):
-		pass
+		if self.character.character_rect.centery <= self.escenario.wall_rect.bottom:	
+			return True
+		return False
+
+	def wall_interaction(self):
+		if self.character.character_rect.colliderect(self.escenario.wall_door_rect):
+			self.globe_dialog_rect = self.globe_dialog.get_rect(bottomleft = self.character.character_rect.topright)
+			screen.blit(self.globe_dialog, self.globe_dialog_rect)
 
 class Escenario:
 	def __init__(self):
 		self.city_ground = pygame.image.load("proyecto-videojuego/resources/City_ground2.png").convert_alpha()
 		self.city_background = pygame.image.load("proyecto-videojuego/resources/Background2.png").convert_alpha()
 		self.wooden_floor = pygame.image.load("proyecto-videojuego/resources/Wooden_floor.png").convert_alpha()
+		self.brick_wall = pygame.image.load("proyecto-videojuego/resources/Brick_wall.png").convert_alpha()
+		self.brick_wall_door = pygame.image.load("proyecto-videojuego/resources/Brick_wall_door.png").convert_alpha()
 		self.floor_x_pos = 0
 		self.background_x_pos = 0
+		self.wall_list = []
 
 	def draw_scenario(self):
 		self.ground, self.background = self.actual_scenario()
 
-		screen.blit(self.background, (self.background_x_pos, 0))
-		screen.blit(self.background, (self.background_x_pos - 1920, 0))
-
-		screen.blit(self.ground, (self.floor_x_pos, 767))
-		screen.blit(self.ground, (self.floor_x_pos + 710, 767))
-		screen.blit(self.ground, (self.floor_x_pos - 710, 767))
+		for row in range(floor_cells):
+			for col in range(floor_cells- 2):
+				self.floor_rect = self.wooden_floor.get_rect(topleft = (row * 150 + self.background_x_pos, col * 150))
+				screen.blit(self.wooden_floor, self.floor_rect)
+		
+		for row in range(int(floor_cells / 2)):
+			self.blank = 3
+			if row != self.blank:
+				self.wall_rect = self.brick_wall.get_rect(topleft = (row * 300 + self.background_x_pos, 0))
+				screen.blit(self.brick_wall, self.wall_rect)
+			else:
+				self.wall_door_rect = self.brick_wall_door.get_rect(topleft = (self.blank * 300 + self.background_x_pos, 0))
+				screen.blit(self.brick_wall_door, self.wall_door_rect)
 
 	def actual_scenario(self):
 		self.scenario_number = 1
@@ -52,11 +69,6 @@ class Escenario:
 		if direction[0] == -1:
 			self.floor_x_pos += 0.9
 			self.background_x_pos += 0.4
-
-	def draw_floor(self):
-		for row in range(floor_cells):
-			self.floor_rect = self.wooden_floor.get_rect(topleft = (row * 300, 0))
-			screen.blit(self.wooden_floor, self.floor_rect)
 
 class Character:
 	def __init__(self):
@@ -82,11 +94,11 @@ class Character:
 			self.character_y_pos -= 2
 
 direction = [0, 0]
-floor_cells = 5
+floor_cells = 10
 
 pygame.init()
 screen = pygame.display.set_mode((1200, 800))
-pygame.display.set_caption("Runner")
+pygame.display.set_caption("Project 9")
 clock = pygame.time.Clock()
 
 main = Main()
@@ -118,6 +130,11 @@ while True:
 	
 	main.draw_elemets()
 	main.move(direction)
+	if main.check_wall_collision():
+		direction[1] = 1
+		main.character.character_y_pos += 3
+		direction[1] = 0
+	main.wall_interaction()
 
 	pygame.display.update()
 	clock.tick(60)
