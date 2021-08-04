@@ -1,3 +1,3 @@
 # Proyecto
 
-Proyecto acrca de la industra de los vidojuegos
+Proyecto acerca de la industra de los videojuegos

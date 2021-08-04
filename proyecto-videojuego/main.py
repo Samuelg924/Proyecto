@@ -5,11 +5,11 @@ class Main:
 	def __init__(self):
 		self.escenario = Escenario()
 		self.character = Character()
+		self.globe_dialog = pygame.image.load("proyecto-videojuego/resources/globe_dialog.png").convert_alpha()
 
 	def draw_elements(self):
 		self.escenario.draw_scenario()
 		self.character.draw_character()
-		self.globe_dialog = pygame.image.load("proyecto-videojuego/resources/globe_dialog.png").convert_alpha()
 
 	def move(self, direction):
 		self.escenario.move_scenario(direction)
@@ -24,6 +24,10 @@ class Main:
 		if self.character.character_rect.colliderect(self.escenario.wall_door_rect):
 			self.globe_dialog_rect = self.globe_dialog.get_rect(bottomleft = self.character.character_rect.topright)
 			screen.blit(self.globe_dialog, self.globe_dialog_rect)
+			return True
+
+	def reset_screen(self):
+		self.escenario.reset_scenario()
 
 class Escenario:
 	def __init__(self):
@@ -71,7 +75,11 @@ class Escenario:
 			self.background_x_pos += 0.4
 
 	def start_screen(self):
-		self.background_camp = self.brick_wall_door = pygame.image.load("proyecto-videojuego/resources/Background3.jpg").convert_alpha()
+		self.background_camp = pygame.image.load("proyecto-videojuego/resources/Background3.jpg").convert_alpha()
+		screen.blit(self.background_camp, (0, 0))
+
+	def reset_scenario(self):
+		self.background_camp = pygame.Surface((1, 1))
 		screen.blit(self.background_camp, (0, 0))
 
 class Character:
@@ -100,9 +108,10 @@ class Character:
 direction = [0, 0]
 floor_cells = 10
 game_status = False
+scene_number = 0
 
 pygame.init()
-screen = pygame.display.set_mode((1200, 800))
+screen = pygame.display.set_mode((1200, 720))
 pygame.display.set_caption("Project 9")
 clock = pygame.time.Clock()
 
@@ -122,8 +131,12 @@ while True:
 				direction[1] = -1
 			if event.key == pygame.K_s:
 				direction[1] = 1
-			if event.key == pygame.K_e:
+			if event.key == pygame.K_e and main.wall_interaction() == True and game_status == True:
+				game_status = False
+				scene_number = 0
+			if event.key == pygame.K_RETURN and game_status == False:
 				game_status = True
+				scene_number = 1
 			
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_d:
@@ -135,16 +148,24 @@ while True:
 			if event.key == pygame.K_w:
 				direction[1] = 0
 	
-	if game_status == True:
+	screen.fill((0, 0, 0))
+	
+	if scene_number == 0:
+		main.reset_screen
+		main.escenario.start_screen()
+
+	elif scene_number == 1:
+		main.reset_screen()
 		main.draw_elements()
 		main.move(direction)
+
 		if main.check_wall_collision():
 			direction[1] = 1
 			main.character.character_y_pos += 3
 			direction[1] = 0
+
 		main.wall_interaction()
-	else:
-		main.escenario.start_screen()
+	
 
 	pygame.display.update()
 	clock.tick(60)
