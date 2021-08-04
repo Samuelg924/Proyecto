@@ -1,4 +1,4 @@
-import pygame, time
+import pygame
 from sys import exit
 
 class Main:
@@ -67,12 +67,15 @@ class Escenario:
 			return self.ground, self.background
 
 	def move_scenario(self, direction):
-		if direction[0] == 1:
-			self.floor_x_pos -= 0.9
-			self.background_x_pos -= 0.4
-		if direction[0] == -1:
-			self.floor_x_pos += 0.9
-			self.background_x_pos += 0.4
+		if self.background_x_pos <= 0:
+			if direction[0] == 1:
+				self.floor_x_pos -= 0.9
+				self.background_x_pos -= 0.4
+			if direction[0] == -1:
+				self.floor_x_pos += 0.9
+				self.background_x_pos += 0.4
+		else:
+			self.background_x_pos -= 0.1
 
 	def start_screen(self):
 		self.background_camp = pygame.image.load("proyecto-videojuego/resources/Background3.jpg").convert_alpha()
@@ -93,29 +96,91 @@ class Character:
 		screen.blit(self.character, self.character_rect)
 
 	def move_character(self, direction):
-		if direction[0] == 1:
-			self.character_x_pos += 2
-			
-		if direction[0] == -1:
-			self.character_x_pos -= 2
+		if self.character_x_pos >= 0:
+			if direction[0] == 1:
+				self.character_x_pos += 2
+				
+			if direction[0] == -1:
+				self.character_x_pos -= 2
 
-		if direction[1] == 1:
-			self.character_y_pos += 2
-		
-		if direction[1] == -1:
-			self.character_y_pos -= 2
+			if direction[1] == 1:
+				self.character_y_pos += 2
+			
+			if direction[1] == -1:
+				self.character_y_pos -= 2
+		else:
+			self.character_x_pos += 0.1
+
+class Button:
+	def __init__(self,text,width,height,pos,elevation):
+		#Core attributes 
+		self.pressed = False
+		self.elevation = elevation
+		self.dynamic_elecation = elevation
+		self.original_y_pos = pos[1]
+
+		# top rectangle 
+		self.top_rect = pygame.Rect(pos,(width,height))
+		self.top_color = (69, 170, 242)
+
+		# bottom rectangle 
+		self.bottom_rect = pygame.Rect(pos,(width,height))
+		self.bottom_color = '#354B5E'
+		#text
+		self.text_surf = gui_font.render(text,True,'#FFFFFF')
+		self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
+
+	def draw(self):
+		# elevation logic 
+		self.top_rect.y = self.original_y_pos - self.dynamic_elecation
+		self.text_rect.center = self.top_rect.center 
+
+		self.bottom_rect.midtop = self.top_rect.midtop
+		self.bottom_rect.height = self.top_rect.height + self.dynamic_elecation
+
+		pygame.draw.rect(screen,self.bottom_color, self.bottom_rect,border_radius = 12)
+		pygame.draw.rect(screen,self.top_color, self.top_rect,border_radius = 12)
+		screen.blit(self.text_surf, self.text_rect)
+		self.check_click()
+
+	def check_click(self):
+		mouse_pos = pygame.mouse.get_pos()
+		if self.top_rect.collidepoint(mouse_pos):
+			self.top_color = (56, 103, 214)
+			if pygame.mouse.get_pressed()[0]:
+				self.dynamic_elecation = 0
+				self.pressed = True
+			else:
+				self.dynamic_elecation = self.elevation
+				if self.pressed == True:
+					print("Changed")
+					self.pressed = False
+		else:
+			self.dynamic_elecation = self.elevation
+			self.top_color = (69, 170, 242)
+
+# Variables de juego
 
 direction = [0, 0]
 floor_cells = 10
 game_status = False
 scene_number = 0
 
+# Main loop
+
 pygame.init()
 screen = pygame.display.set_mode((1200, 720))
 pygame.display.set_caption("Project 9")
 clock = pygame.time.Clock()
 
+# Variables adicionales (Pygame)
+
+gui_font = pygame.font.Font(None,30)
+
+# Classes
+
 main = Main()
+button1 = Button('Start',200,40,(500,300),5)
 
 while True:
 	for event in pygame.event.get():
@@ -123,13 +188,13 @@ while True:
 			pygame.quit()
 			exit()
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_d:
+			if event.key == pygame.K_d and game_status == True:
 				direction[0] = 1	
-			if event.key == pygame.K_a:
+			if event.key == pygame.K_a and game_status == True:
 				direction[0] = -1	
-			if event.key == pygame.K_w:
+			if event.key == pygame.K_w and game_status == True:
 				direction[1] = -1
-			if event.key == pygame.K_s:
+			if event.key == pygame.K_s and game_status == True:
 				direction[1] = 1
 			if event.key == pygame.K_e and main.wall_interaction() == True and game_status == True:
 				game_status = False
@@ -153,6 +218,10 @@ while True:
 	if scene_number == 0:
 		main.reset_screen
 		main.escenario.start_screen()
+		button1.draw()
+		if button1.pressed == True:
+			scene_number = 1
+			game_status = True
 
 	elif scene_number == 1:
 		main.reset_screen()
