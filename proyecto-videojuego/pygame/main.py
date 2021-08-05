@@ -121,13 +121,13 @@ class Button:
 
 		# top rectangle 
 		self.top_rect = pygame.Rect(pos,(width,height))
-		self.top_color = (69, 170, 242)
+		self.top_color = (0, 0, 0)
 
 		# bottom rectangle 
 		self.bottom_rect = pygame.Rect(pos,(width,height))
-		self.bottom_color = '#354B5E'
+		self.bottom_color = (255, 255, 255)
 		#text
-		self.text_surf = gui_font.render(text,True,'#FFFFFF')
+		self.text_surf = gui_font.render(text,True, (255, 255, 255))
 		self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
 
 	def draw(self):
@@ -146,7 +146,7 @@ class Button:
 	def check_click(self):
 		mouse_pos = pygame.mouse.get_pos()
 		if self.top_rect.collidepoint(mouse_pos):
-			self.top_color = (56, 103, 214)
+			self.top_color = (90, 90, 90)
 			if pygame.mouse.get_pressed()[0]:
 				self.dynamic_elecation = 0
 				self.pressed = True
@@ -157,7 +157,7 @@ class Button:
 					self.pressed = False
 		else:
 			self.dynamic_elecation = self.elevation
-			self.top_color = (69, 170, 242)
+			self.top_color = (50, 50, 50)
 
 # Variables de juego
 
@@ -184,7 +184,7 @@ gui_font = pygame.font.Font(None,30)
 # Classes
 
 main = Main()
-button1 = Button('PLAY',200,40,[window_width / 2, window_height / 2],5)
+button1 = Button('PLAY', 300, 100, [window_width / 2, window_height / 2], 5)
 
 while True:
 	for event in pygame.event.get():
@@ -238,7 +238,7 @@ while True:
 		main.wall_interaction()
 	
 	elif scene_number == 2:
-		import flappybird
+		pass
 
 	pygame.display.update()
 	clock.tick(60)
