@@ -8,7 +8,8 @@ class Main:
 		self.globe_dialog = pygame.image.load("proyecto-videojuego/resources/globe_dialog.png").convert_alpha()
 
 	def draw_elements(self):
-		self.escenario.draw_scenario()
+		if scene_number == 1:
+			self.escenario.draw_scenario1()
 		self.character.draw_character()
 
 	def move(self, direction):
@@ -21,13 +22,10 @@ class Main:
 		return False
 
 	def wall_interaction(self):
-		if self.character.character_rect.colliderect(self.escenario.wall_door_rect):
+		if self.character.character_rect.colliderect(self.escenario.wall_door_rect1) or self.character.character_rect.colliderect(self.escenario.wall_door_rect2):
 			self.globe_dialog_rect = self.globe_dialog.get_rect(bottomleft = self.character.character_rect.topright)
 			screen.blit(self.globe_dialog, self.globe_dialog_rect)
 			return True
-
-	def reset_screen(self):
-		self.escenario.reset_scenario()
 
 class Escenario:
 	def __init__(self):
@@ -39,8 +37,9 @@ class Escenario:
 		self.floor_x_pos = 0
 		self.background_x_pos = 0
 		self.wall_list = []
+		self.scene_number = scene_number
 
-	def draw_scenario(self):
+	def draw_scenario1(self):
 		self.ground, self.background = self.actual_scenario()
 
 		for row in range(floor_cells):
@@ -49,13 +48,16 @@ class Escenario:
 				screen.blit(self.wooden_floor, self.floor_rect)
 		
 		for row in range(int(floor_cells / 2)):
-			self.blank = 3
-			if row != self.blank:
+			self.blank = 1
+			self.blank2 = 3
+			if row != self.blank and row != self.blank2:
 				self.wall_rect = self.brick_wall.get_rect(topleft = (row * 300 + self.background_x_pos, 0))
 				screen.blit(self.brick_wall, self.wall_rect)
 			else:
-				self.wall_door_rect = self.brick_wall_door.get_rect(topleft = (self.blank * 300 + self.background_x_pos, 0))
-				screen.blit(self.brick_wall_door, self.wall_door_rect)
+				self.wall_door_rect1 = self.brick_wall_door.get_rect(topleft = (self.blank * 300 + self.background_x_pos, 0))
+				self.wall_door_rect2 = self.brick_wall_door.get_rect(topleft = (self.blank2 * 300 + self.background_x_pos, 0))
+				screen.blit(self.brick_wall_door, self.wall_door_rect1)
+				screen.blit(self.brick_wall_door, self.wall_door_rect2)
 
 	def actual_scenario(self):
 		self.scenario_number = 1
@@ -79,10 +81,6 @@ class Escenario:
 
 	def start_screen(self):
 		self.background_camp = pygame.image.load("proyecto-videojuego/resources/Background3.jpg").convert_alpha()
-		screen.blit(self.background_camp, (0, 0))
-
-	def reset_scenario(self):
-		self.background_camp = pygame.Surface((1, 1))
 		screen.blit(self.background_camp, (0, 0))
 
 class Character:
@@ -113,7 +111,9 @@ class Character:
 
 class Button:
 	def __init__(self,text,width,height,pos,elevation):
-		#Core attributes 
+		# Core attributes
+		pos[0], pos[1] = pos[0] - width / 2, pos[1] - height / 2
+		pos = (pos[0], pos[1])
 		self.pressed = False
 		self.elevation = elevation
 		self.dynamic_elecation = elevation
@@ -163,13 +163,17 @@ class Button:
 
 direction = [0, 0]
 floor_cells = 10
-game_status = False
+character_move_status = False
 scene_number = 0
+
+# Configuracion de ventana
+
+window_width, window_height = 1280, 720
 
 # Main loop
 
 pygame.init()
-screen = pygame.display.set_mode((1200, 720))
+screen = pygame.display.set_mode((window_width, window_height))
 pygame.display.set_caption("Project 9")
 clock = pygame.time.Clock()
 
@@ -180,7 +184,7 @@ gui_font = pygame.font.Font(None,30)
 # Classes
 
 main = Main()
-button1 = Button('Start',200,40,(500,300),5)
+button1 = Button('PLAY',200,40,[window_width / 2, window_height / 2],5)
 
 while True:
 	for event in pygame.event.get():
@@ -188,19 +192,19 @@ while True:
 			pygame.quit()
 			exit()
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_d and game_status == True:
+			if event.key == pygame.K_d and character_move_status == True:
 				direction[0] = 1	
-			if event.key == pygame.K_a and game_status == True:
+			if event.key == pygame.K_a and character_move_status == True:
 				direction[0] = -1	
-			if event.key == pygame.K_w and game_status == True:
+			if event.key == pygame.K_w and character_move_status == True:
 				direction[1] = -1
-			if event.key == pygame.K_s and game_status == True:
+			if event.key == pygame.K_s and character_move_status == True:
 				direction[1] = 1
-			if event.key == pygame.K_e and main.wall_interaction() == True and game_status == True:
-				game_status = False
-				scene_number = 0
-			if event.key == pygame.K_RETURN and game_status == False:
-				game_status = True
+			if event.key == pygame.K_e and main.wall_interaction() == True and character_move_status == True:
+				character_move_status = False
+				scene_number = 2
+			if event.key == pygame.K_RETURN and character_move_status == False:
+				character_move_status = True
 				scene_number = 1
 			
 		if event.type == pygame.KEYUP:
@@ -216,15 +220,13 @@ while True:
 	screen.fill((0, 0, 0))
 	
 	if scene_number == 0:
-		main.reset_screen
 		main.escenario.start_screen()
 		button1.draw()
 		if button1.pressed == True:
 			scene_number = 1
-			game_status = True
+			character_move_status = True
 
 	elif scene_number == 1:
-		main.reset_screen()
 		main.draw_elements()
 		main.move(direction)
 
@@ -235,6 +237,8 @@ while True:
 
 		main.wall_interaction()
 	
+	elif scene_number == 2:
+		import flappybird
 
 	pygame.display.update()
 	clock.tick(60)
