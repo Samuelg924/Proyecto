@@ -125,7 +125,7 @@ class Button:
 
 		# bottom rectangle 
 		self.bottom_rect = pygame.Rect(pos,(width,height))
-		self.bottom_color = (255, 255, 255)
+		self.bottom_color = (200, 200, 200)
 		#text
 		self.text_surf = gui_font.render(text,True, (255, 255, 255))
 		self.text_rect = self.text_surf.get_rect(center = self.top_rect.center)
