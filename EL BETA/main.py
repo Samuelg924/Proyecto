@@ -14,7 +14,7 @@ pokemon1.stats = {
     ATTACK: 145,
     DEFENSE: 88,
     SPATTACK: 150,
-    SPDEFESNE: 70,
+    SPDEFENSE: 70,
     SPEED: 112,
     }
 
@@ -24,7 +24,7 @@ pokemon2.stats = {
     ATTACK: 95,
     DEFENSE: 80,
     SPATTACK: 110,
-    SPDEFESNE: 85,
+    SPDEFENSE: 85,
     SPEED: 100,
     }
 

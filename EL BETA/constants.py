@@ -3,7 +3,6 @@
 HP = "HP"
 ATTACK = "Attack"
 DEFENSE = "Defense"
-SPATTACK = "SpAttack
-"SPDEFENSE = "SpDefense"
+SPATTACK = "SpAttack"
+SPDEFENSE = "SpDefense"
 SPEED = "Speed"
-
