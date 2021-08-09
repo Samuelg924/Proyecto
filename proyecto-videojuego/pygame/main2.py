@@ -1,15 +1,6 @@
 import pygame
 from sys import exit
 
-class Main:
-	def __init__(self):
-		# self.scenario = Scenario()
-		pass
-
-	def draw_elements(self):
-		# self.scenario.draw_elements()
-		pass
-
 class Scenario:
 	def __init__(self, background = "", floor = "", wall = "", wall_door = ""):
 		self.background = background
@@ -146,7 +137,6 @@ gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 
 # Classes
 
-main = Main()
 character = Character(character_surface)
 button1 = Button('START', 300, 120, [window_width / 2, (window_height / 3) * 2], 5, marco_boton_blanco, marco_boton_gris)
 
