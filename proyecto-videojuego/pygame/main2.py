@@ -22,13 +22,9 @@ class Scenario:
 
 	def draw_scenario1(self):
 		if button_selection_character1.pressed:
-			# self.background_character1 = character_background2
-			# self.background_character2 = character_background1
 			button_selection_character2.status = False
 
 		if button_selection_character2.pressed:
-			# self.background_character2 = character_background2
-			# self.background_character1 = character_background1
 			button_selection_character1.status = False
 
 		if button_selection_character1.status:
