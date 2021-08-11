@@ -7,11 +7,37 @@ class Scenario:
 		self.floor = floor
 		self.wall = wall
 		self.wall_door = wall_door
+		self.character_surface1 = pygame.transform.scale2x(character_surface1)
+		self.character_surface2 = pygame.transform.scale(character_surface2, (64, 295))
+		self.background_character1 = character_background1
+		self.background_character2 = character_background1
+
+		self.character_rect1 = self.character_surface1.get_rect(center = (window_width / 3, window_height / 3))
+		self.character_rect2 = self.character_surface2.get_rect(center = ((window_width / 3) * 2, window_height / 3))
+		self.background_character_rect1 = self.background_character1.get_rect(center = (window_width / 3, window_height / 3))
+		self.background_character_rect2 = self.background_character2.get_rect(center = ((window_width / 3) * 2, window_height / 3))
 
 	def draw_scenario0(self):
 		screen.blit(self.background, (0, 0))
 
 	def draw_scenario1(self):
+		if button_selection_character1.pressed:
+			self.background_character1 = character_background2
+			self.background_character2 = character_background1
+			# button_selection_character2.status = False
+
+		if button_selection_character2.pressed:
+			self.background_character2 = character_background2
+			self.background_character1 = character_background1
+			# button_selection_character1.status = False
+
+		screen.blit(self.background, (0, 0))
+		screen.blit(self.background_character1, self.background_character_rect1)
+		screen.blit(self.background_character2, self.background_character_rect2)
+		screen.blit(self.character_surface1, self.character_rect1)
+		screen.blit(self.character_surface2, self.character_rect2)
+	
+	def draw_scenario2(self):
 		screen.blit(self.wall, (0, 0))
 
 class Character:
@@ -55,6 +81,7 @@ class Button:
 		self.original_y_pos = pos[1]
 		self.font_color = (255, 255, 255)
 		self.text = text
+		self.status = False
 
 		# Top rectangle 
 
@@ -83,10 +110,11 @@ class Button:
 			if pygame.mouse.get_pressed()[0]:
 				self.dynamic_elecation = 0
 				self.pressed = True
+				self.status = True
 			else:
 				self.dynamic_elecation = self.elevation + 0.5
 				if self.pressed == True:
-					print("Changed")
+					print(self.status)
 					self.pressed = False
 		else:
 			self.dynamic_elecation = self.elevation
@@ -126,10 +154,14 @@ wall_door = pygame.Surface((500, 500))
 # Carga de imagenes
 
 background_ciudad_azul = pygame.transform.scale(pygame.image.load("proyecto-videojuego/resources/Background2.png").convert_alpha(), (window_width, window_height))
+background_flatlands = pygame.transform.scale(pygame.image.load("proyecto-videojuego/resources/Background3.jpg").convert_alpha(), (window_width, window_height))
 wall_brick_tile = pygame.image.load("proyecto-videojuego/resources/BRick_wall.png").convert_alpha()
 marco_boton_blanco = pygame.image.load("proyecto-videojuego/resources/Marco_boton_blanco.png").convert_alpha()
 marco_boton_gris = pygame.image.load("proyecto-videojuego/resources/Marco_boton_gris.png").convert_alpha()
-character_surface = pygame.transform.scale2x(pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha())
+character_surface1 = pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha()
+character_surface2 = pygame.image.load("proyecto-videojuego/resources/Character-test2.png").convert_alpha()
+character_background1 = pygame.image.load("proyecto-videojuego/resources/Character_background.png").convert_alpha()
+character_background2 = pygame.image.load("proyecto-videojuego/resources/Character_background2.png").convert_alpha()
 
 # Variables adicionales (Pygame)
 
@@ -137,8 +169,14 @@ gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 
 # Classes
 
-character = Character(character_surface)
-button1 = Button('START', 300, 120, [window_width / 2, (window_height / 3) * 2], 5, marco_boton_blanco, marco_boton_gris)
+# Character = Character(character_surface1)
+
+# Botones
+
+button_start = Button('START', 300, 120, [window_width / 2, (window_height / 3) * 2], 5, marco_boton_blanco, marco_boton_gris)
+button_selection_character1 = Button('SELECT', 300, 120, [window_width / 3, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
+button_selection_character2 = Button('SELECT', 300, 120, [(window_width / 3) * 2, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
+button_selection_character_confirm = Button('Confirm', 230, 80, [window_width / 2, (window_height / 10) * 9.15], 5, marco_boton_blanco, marco_boton_gris)
 
 # Main Loop
 
@@ -179,16 +217,34 @@ while True:
 		background = background_ciudad_azul
 		scenario = Scenario(background = background)
 		scenario.draw_scenario0()
-		button1.draw()
-		scene_number = scene_number + button1.change_scenario()
+		button_start.draw()
+		scene_number = scene_number + button_start.change_scenario()
 
-	if scene_number == 1:
+	elif scene_number == 1:
+		background = background_flatlands
+		scenario = Scenario(background = background)
+		scenario.draw_scenario1()
+		button_selection_character1.draw()
+		button_selection_character2.draw()
+
+		if button_selection_character1.status:
+			character = Character(character_surface1)
+
+		if button_selection_character2.status:
+			character = Character(character_surface2)
+
+		if button_selection_character1.status or button_selection_character2.status:
+			button_selection_character_confirm.draw()
+			if button_selection_character_confirm.status:
+				scene_number = 2
+	
+	elif scene_number == 2:
 		wall = wall_brick_tile
 		character_move_status = True
 		scenario = Scenario(wall = wall)
 		character.draw_character()
 		character.move_character(direction)
-		scenario.draw_scenario1()
+		scenario.draw_scenario2()
 
 	pygame.display.update()
 	clock.tick(60)
