@@ -22,14 +22,22 @@ class Scenario:
 
 	def draw_scenario1(self):
 		if button_selection_character1.pressed:
-			self.background_character1 = character_background2
-			self.background_character2 = character_background1
-			# button_selection_character2.status = False
+			# self.background_character1 = character_background2
+			# self.background_character2 = character_background1
+			button_selection_character2.status = False
 
 		if button_selection_character2.pressed:
+			# self.background_character2 = character_background2
+			# self.background_character1 = character_background1
+			button_selection_character1.status = False
+
+		if button_selection_character1.status:
+			self.background_character1 = character_background2
+			self.background_character2 = character_background1
+
+		if button_selection_character2.status:
 			self.background_character2 = character_background2
 			self.background_character1 = character_background1
-			# button_selection_character1.status = False
 
 		screen.blit(self.background, (0, 0))
 		screen.blit(self.background_character1, self.background_character_rect1)
