@@ -47,12 +47,24 @@ class Scenario:
 class Character:
 	def __init__(self, character_surface):
 		self.character = character_surface
+		self.character_image_list = character_image_list
 		self.character_x_pos = 250
 		self.character_y_pos = 767
 
 	def draw_character(self):
 		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, self.character_y_pos))
 		screen.blit(self.character, self.character_rect)
+
+	def animate_character(self, direction):
+		image_index = 0
+		if direction == [1, 0]:
+			while image_index <= 4:
+				# self.character = self.character_image_list[image_index]
+				print(image_index)
+				image_index += 1
+			else:
+				image_index = 0
+			
 
 	def move_character(self, direction):
 		if self.character_x_pos >= 0:
@@ -171,9 +183,18 @@ character_background2 = pygame.image.load("proyecto-videojuego/resources/Charact
 
 gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 
-# Classes
+# Variables de juego (Python)
 
-# Character = Character(character_surface1)
+character_image_list = [
+	1,
+	2,
+	3
+]
+
+# USEREVENT
+
+animation_tick = pygame.USEREVENT + 10
+pygame.time.set_timer(animation_tick, 200)
 
 # Botones
 
@@ -181,6 +202,10 @@ button_start = Button('START', 300, 120, [window_width / 2, (window_height / 3) 
 button_selection_character1 = Button('SELECT', 300, 120, [window_width / 3, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
 button_selection_character2 = Button('SELECT', 300, 120, [(window_width / 3) * 2, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
 button_selection_character_confirm = Button('Confirm', 230, 80, [window_width / 2, (window_height / 10) * 9.15], 5, marco_boton_blanco, marco_boton_gris)
+
+# Classes
+
+character = Character(character_surface1)
 
 # Main Loop
 
@@ -191,13 +216,17 @@ while True:
 			exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_d and character_move_status == True:
-				direction[0] = 1	
+				direction[0] = 1
+				character.animate_character(direction)	
 			if event.key == pygame.K_a and character_move_status == True:
-				direction[0] = -1	
+				direction[0] = -1
+				character.animate_character(direction)
 			if event.key == pygame.K_w and character_move_status == True:
 				direction[1] = -1
+				character.animate_character(direction)
 			if event.key == pygame.K_s and character_move_status == True:
 				direction[1] = 1
+				character.animate_character(direction)
 			# if event.key == pygame.K_e and main.wall_interaction() == True and character_move_status == True:
 			# 	character_move_status = False
 			# 	scene_number = 2
@@ -214,6 +243,9 @@ while True:
 				direction[1] = 0
 			if event.key == pygame.K_w:
 				direction[1] = 0
+
+		if event.type == animation_tick:
+			character.animate_character(direction)
 	
 	screen.fill((0, 0, 0))
 
