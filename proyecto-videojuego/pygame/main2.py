@@ -171,10 +171,6 @@ character_background2 = pygame.image.load("proyecto-videojuego/resources/Charact
 
 gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 
-# Classes
-
-# Character = Character(character_surface1)
-
 # Botones
 
 button_start = Button('START', 300, 120, [window_width / 2, (window_height / 3) * 2], 5, marco_boton_blanco, marco_boton_gris)
