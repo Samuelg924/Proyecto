@@ -7,7 +7,7 @@ class Scenario:
 		self.floor = floor
 		self.wall = wall
 		self.wall_door = wall_door
-		self.character_surface1 = character_surface3
+		self.character_surface1 = pygame.transform.scale2x(character_surface1_0)
 		self.character_surface2 = pygame.transform.scale(character_surface2, (64, 295))
 		self.background_character1 = character_background1
 		self.background_character2 = character_background1
@@ -46,12 +46,13 @@ class Scenario:
 
 class Character:
 	def __init__(self, character_surface_number):
-		if character_surface_number == 1: self.character = character_image_list3[character_index]
-		if character_surface_number == 2: self.character = character_image_list2[character_index]
+		self.character_surface_number = character_surface_number
 		self.character_x_pos = 250
 		self.character_y_pos = 600
 
 	def draw_character(self):
+		if self.character_surface_number == 1: self.character = character_image_list1[character_index]
+		if self.character_surface_number == 2: self.character = character_image_list2[character_index]
 		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, self.character_y_pos))
 		screen.blit(self.character, self.character_rect)			
 
@@ -130,6 +131,19 @@ class Button:
 			return 1
 		else:
 			return 0
+
+class Dialogue_globe:
+	def __init__(self, text, name, character_icon):
+		self.text = gui_font.render(text, True, (255, 255, 255))
+		self.character_icon = character_icon
+		self.character_name = name
+		self.color = (255, 255, 255)
+
+		self.text_rect = pygame.Rect((20, (window_height / 3) * 2), (window_width - 40, ((window_height / 3) * 2) - 20))
+
+	def draw(self):
+		pygame.draw.rect(screen, self.color, self.text_rect, border_radius = 5)
+		screen.blit(self.text, self.text_rect)
 
 # Funciones
 
@@ -212,11 +226,15 @@ background_flatlands = pygame.transform.scale(pygame.image.load("proyecto-videoj
 wall_brick_tile = pygame.image.load("proyecto-videojuego/resources/BRick_wall.png").convert_alpha()
 marco_boton_blanco = pygame.image.load("proyecto-videojuego/resources/Marco_boton_blanco.png").convert_alpha()
 marco_boton_gris = pygame.image.load("proyecto-videojuego/resources/Marco_boton_gris.png").convert_alpha()
-character_surface1 = pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha()
 character_surface2 = pygame.image.load("proyecto-videojuego/resources/Character-test2.png").convert_alpha()
 character_surface3 = pygame.image.load("proyecto-videojuego/resources/Character-test3.png").convert_alpha()
 character_background1 = pygame.image.load("proyecto-videojuego/resources/Character_background.png").convert_alpha()
 character_background2 = pygame.image.load("proyecto-videojuego/resources/Character_background2.png").convert_alpha()
+
+# Carga de imagenes (Personaje 1)
+
+character_surface1_0 = pygame.image.load("proyecto-videojuego/resources/Personaje1-Estatico.png").convert_alpha()
+character_surface1_1 = pygame.image.load("proyecto-videojuego/resources/Personaje1-1.png").convert_alpha()
 
 # Variables adicionales (Pygame)
 
@@ -225,12 +243,19 @@ gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 # Variables de juego (Python)
 
 character_image_list1 = [
-	character_surface1,
-	character_surface1,
-	character_surface1,
-	character_surface1,
-	character_surface1,
-	character_surface1
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_1,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
+	character_surface1_0,
 ]
 
 character_image_list2 = [
@@ -239,7 +264,14 @@ character_image_list2 = [
 	character_surface2,
 	character_surface2,
 	character_surface2,
-	character_surface2
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
 ]
 
 character_image_list3 = [
@@ -255,7 +287,7 @@ character_image_list3 = [
 # USEREVENT
 
 animation_tick = pygame.USEREVENT + 10
-pygame.time.set_timer(animation_tick, 800)
+pygame.time.set_timer(animation_tick, 400)
 
 # Botones
 
@@ -266,7 +298,7 @@ button_selection_character_confirm = Button('Confirm', 230, 80, [window_width / 
 
 # Classes
 
-character = Character(character_surface1)
+character = Character(character_surface1_0)
 
 # Main Loop
 
@@ -284,10 +316,10 @@ while True:
 				character_index = 4
 			if event.key == pygame.K_w and character_move_status == True:
 				direction[1] = -1
-				character_index = 10
+				if not character_index <= 9: character_index = 10
 			if event.key == pygame.K_s and character_move_status == True:
 				direction[1] = 1
-				character_index = 7
+				if not character_index <= 6: character_index = 7
 			# if event.key == pygame.K_e and main.wall_interaction() == True and character_move_status == True:
 			# 	character_move_status = False
 			# 	scene_number = 2
