@@ -7,7 +7,7 @@ class Scenario:
 		self.floor = floor
 		self.wall = wall
 		self.wall_door = wall_door
-		self.character_surface1 = pygame.transform.scale2x(character_surface1)
+		self.character_surface1 = character_surface3
 		self.character_surface2 = pygame.transform.scale(character_surface2, (64, 295))
 		self.background_character1 = character_background1
 		self.background_character2 = character_background1
@@ -46,7 +46,7 @@ class Scenario:
 
 class Character:
 	def __init__(self, character_surface_number):
-		if character_surface_number == 1: self.character = character_image_list1[character_index]
+		if character_surface_number == 1: self.character = character_image_list3[character_index]
 		if character_surface_number == 2: self.character = character_image_list2[character_index]
 		self.character_x_pos = 250
 		self.character_y_pos = 600
@@ -214,6 +214,7 @@ marco_boton_blanco = pygame.image.load("proyecto-videojuego/resources/Marco_boto
 marco_boton_gris = pygame.image.load("proyecto-videojuego/resources/Marco_boton_gris.png").convert_alpha()
 character_surface1 = pygame.image.load("proyecto-videojuego/resources/Character-test.png").convert_alpha()
 character_surface2 = pygame.image.load("proyecto-videojuego/resources/Character-test2.png").convert_alpha()
+character_surface3 = pygame.image.load("proyecto-videojuego/resources/Character-test3.png").convert_alpha()
 character_background1 = pygame.image.load("proyecto-videojuego/resources/Character_background.png").convert_alpha()
 character_background2 = pygame.image.load("proyecto-videojuego/resources/Character_background2.png").convert_alpha()
 
@@ -239,6 +240,15 @@ character_image_list2 = [
 	character_surface2,
 	character_surface2,
 	character_surface2
+]
+
+character_image_list3 = [
+	character_surface3,
+	character_surface3,
+	character_surface3,
+	character_surface3,
+	character_surface3,
+	character_surface3
 ]
 
 
