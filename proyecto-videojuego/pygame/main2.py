@@ -45,14 +45,15 @@ class Scenario:
 		screen.blit(self.wall, (0, 0))
 
 class Character:
-	def __init__(self, character_surface):
-		self.character = character_surface
+	def __init__(self, character_surface_number):
+		if character_surface_number == 1: self.character = character_image_list1[character_index]
+		if character_surface_number == 2: self.character = character_image_list2[character_index]
 		self.character_x_pos = 250
-		self.character_y_pos = 767
+		self.character_y_pos = 600
 
 	def draw_character(self):
 		self.character_rect = self.character.get_rect(midbottom = (self.character_x_pos, self.character_y_pos))
-		screen.blit(self.character, self.character_rect)
+		screen.blit(self.character, self.character_rect)			
 
 	def move_character(self, direction):
 		if self.character_x_pos >= 0:
@@ -130,12 +131,61 @@ class Button:
 		else:
 			return 0
 
+# Funciones
+
+def animate(direction, character_index, counter):
+	if direction == [1, 0] or direction == [1, -1] or direction == [1, 1]:
+		if character_index < 3:
+			if not counter and character_index == 2:
+				_character_index = character_index - 1
+			else:
+				_character_index = character_index + 1
+				counter = True
+		else:
+			_character_index = character_index - 1
+			counter = False
+	
+	elif direction == [-1, 0] or direction == [-1, -1] or direction == [-1, 1]:
+		if character_index < 6:
+			if not counter and character_index == 5:
+				_character_index = character_index - 1
+			else:
+				_character_index = character_index + 1
+				counter = True
+		else:
+			_character_index = character_index - 1
+			counter = False
+		
+	elif direction == [0, 1]:
+		if character_index < 9:
+			if not counter and character_index == 8:
+				_character_index = character_index - 1
+			else:
+				_character_index = character_index + 1
+				counter = True
+		else:
+			_character_index = character_index - 1
+			counter = False
+
+	elif direction == [0, -1]:
+		if character_index < 12:
+			_character_index = character_index + 1
+		else:
+			_character_index = character_index - 1
+			counter = False
+
+	else:
+		_character_index = 0
+	return _character_index, counter
+
 # Variables de juego
 
 direction = [0, 0]
 floor_cells = 10
 character_move_status = False
 scene_number = 0
+character_index = 0
+counter = True
 
 # Configuracion de ventana
 
@@ -171,12 +221,42 @@ character_background2 = pygame.image.load("proyecto-videojuego/resources/Charact
 
 gui_font = pygame.font.Font("proyecto-videojuego/resources/Burgundy.otf", 40)
 
+# Variables de juego (Python)
+
+character_image_list1 = [
+	character_surface1,
+	character_surface1,
+	character_surface1,
+	character_surface1,
+	character_surface1,
+	character_surface1
+]
+
+character_image_list2 = [
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2,
+	character_surface2
+]
+
+
+# USEREVENT
+
+animation_tick = pygame.USEREVENT + 10
+pygame.time.set_timer(animation_tick, 800)
+
 # Botones
 
 button_start = Button('START', 300, 120, [window_width / 2, (window_height / 3) * 2], 5, marco_boton_blanco, marco_boton_gris)
 button_selection_character1 = Button('SELECT', 300, 120, [window_width / 3, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
 button_selection_character2 = Button('SELECT', 300, 120, [(window_width / 3) * 2, (window_height / 4) * 3], 5, marco_boton_blanco, marco_boton_gris)
 button_selection_character_confirm = Button('Confirm', 230, 80, [window_width / 2, (window_height / 10) * 9.15], 5, marco_boton_blanco, marco_boton_gris)
+
+# Classes
+
+character = Character(character_surface1)
 
 # Main Loop
 
@@ -187,13 +267,17 @@ while True:
 			exit()
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_d and character_move_status == True:
-				direction[0] = 1	
+				direction[0] = 1
+				character_index = 1
 			if event.key == pygame.K_a and character_move_status == True:
-				direction[0] = -1	
+				direction[0] = -1
+				character_index = 4
 			if event.key == pygame.K_w and character_move_status == True:
 				direction[1] = -1
+				character_index = 10
 			if event.key == pygame.K_s and character_move_status == True:
 				direction[1] = 1
+				character_index = 7
 			# if event.key == pygame.K_e and main.wall_interaction() == True and character_move_status == True:
 			# 	character_move_status = False
 			# 	scene_number = 2
@@ -210,7 +294,12 @@ while True:
 				direction[1] = 0
 			if event.key == pygame.K_w:
 				direction[1] = 0
-	
+
+		if character_move_status:
+			if event.type == animation_tick:
+				character_index, counter = animate(direction, character_index, counter)
+				print(character_index)
+
 	screen.fill((0, 0, 0))
 
 	if scene_number == 0:
@@ -228,10 +317,10 @@ while True:
 		button_selection_character2.draw()
 
 		if button_selection_character1.status:
-			character = Character(character_surface1)
+			character = Character(1)
 
 		if button_selection_character2.status:
-			character = Character(character_surface2)
+			character = Character(2)
 
 		if button_selection_character1.status or button_selection_character2.status:
 			button_selection_character_confirm.draw()
