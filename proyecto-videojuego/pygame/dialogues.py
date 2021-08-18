@@ -1,0 +1,1 @@
+dialogue1 = "Hello, I'm Joe. I will indruce you to this wonderful world."

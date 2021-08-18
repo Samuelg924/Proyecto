@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+import dialogues
 
 class Scenario:
 	def __init__(self, background = "", floor = "", wall = "", wall_door = ""):
@@ -134,16 +135,23 @@ class Button:
 
 class Dialogue_globe:
 	def __init__(self, text, name, character_icon):
-		self.text = gui_font.render(text, True, (255, 255, 255))
+		self.text = gui_font.render(text, True, (0, 0, 0))
 		self.character_icon = character_icon
-		self.character_name = name
+		self.character_name = gui_font.render(name, True, (255, 255, 255))
 		self.color = (255, 255, 255)
 
-		self.text_rect = pygame.Rect((20, (window_height / 3) * 2), (window_width - 40, ((window_height / 3) * 2) - 20))
+		self.text_background_rect = pygame.Rect((20, (window_height / 3) * 2), (window_width - 40, (((window_height / 3) * 2)) - 40))
+		self.text_rect = self.text.get_rect(topleft = (self.text_background_rect.topleft[0] + 10, self.text_background_rect.topleft[1] + 50))
+		self.character_icon_rect = self.character_icon.get_rect(bottomleft = self.text_background_rect.topleft)
+		self.character_name_rect = self.character_name.get_rect(bottomleft = (self.text_rect.topleft[0], self.text_rect.topleft[1] - 5))
+		self.character_name_background = pygame.Rect((self.character_name_rect.x - 2.5, self.character_name_rect.y - 2.5), (self.character_name_rect.width + 5, self.character_name_rect.height + 5))
 
 	def draw(self):
-		pygame.draw.rect(screen, self.color, self.text_rect, border_radius = 5)
+		pygame.draw.rect(screen, self.color, self.text_background_rect, border_radius = 10)
+		pygame.draw.rect(screen, (0, 0, 0), self.character_name_background, border_radius = 5)
+		screen.blit(self.character_name, self.character_name_rect)
 		screen.blit(self.text, self.text_rect)
+		screen.blit(self.character_icon, self.character_icon_rect)
 
 # Funciones
 
@@ -235,6 +243,7 @@ character_background2 = pygame.image.load("proyecto-videojuego/resources/Charact
 
 character_surface1_0 = pygame.image.load("proyecto-videojuego/resources/Personaje1-Estatico.png").convert_alpha()
 character_surface1_1 = pygame.image.load("proyecto-videojuego/resources/Personaje1-1.png").convert_alpha()
+character_icon1 = pygame.transform.scale2x(pygame.image.load("proyecto-videojuego/resources/Personaje1-Icono.png").convert_alpha())
 
 # Variables adicionales (Pygame)
 
@@ -299,6 +308,10 @@ button_selection_character_confirm = Button('Confirm', 230, 80, [window_width / 
 # Classes
 
 character = Character(character_surface1_0)
+
+# Dialogos
+
+dialogue_1 = Dialogue_globe(dialogues.dialogue1, "Joe", character_icon1)
 
 # Main Loop
 
@@ -367,7 +380,7 @@ while True:
 		if button_selection_character1.status or button_selection_character2.status:
 			button_selection_character_confirm.draw()
 			if button_selection_character_confirm.status:
-				scene_number = 2
+				scene_number = 3
 	
 	elif scene_number == 2:
 		wall = wall_brick_tile
@@ -376,6 +389,12 @@ while True:
 		character.draw_character()
 		character.move_character(direction)
 		scenario.draw_scenario2()
+
+	elif scene_number == 3:
+		background = background_flatlands
+		scenario = Scenario(background = background)
+		scenario.draw_scenario0()
+		dialogue_1.draw()
 
 	pygame.display.update()
 	clock.tick(60)
