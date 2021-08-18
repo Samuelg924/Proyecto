@@ -20,7 +20,7 @@ BLUE_LASERS = pygame.image.load("Juan_David/assets/pixel_laser_blue.png")
 YELLOW_LASERS = pygame.image.load("Juan_David/assets/pixel_laser_yellow.png")
 
 # background
-BG = pygame.transform.scale(pygame.image.load("assets", "pixel_ship_yellow.png"), (WIDTH, HEIGHT))
+BG = pygame.transform.scale(pygame.image.load("Juan_David/assets/background-black.png"), (WIDTH, HEIGHT))
 
 
 class Ship:
