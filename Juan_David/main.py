@@ -1,7 +1,7 @@
 import pygame,os, time, random
 pygame.font.init()
 
-WIDTH, HEIGHT = 750, 600
+WIDTH, HEIGHT = 650, 650
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("space invaders")
 
@@ -11,7 +11,7 @@ GREEN_SPACE_SHIP = pygame.image.load("Juan_David/assets/pixel_ship_green_small.p
 BLUE_SPACE_SHIP = pygame.image.load("Juan_David/assets/pixel_ship_blue_small.png")
 
 # player ship
-YELLOW_SPACE_SHIP = pygame.image.load("Juan_David/assets/pixel_ship_yellow.png")
+YELLOW_SPACE_SHIP = pygame.image.load(os.path.join("Juan_David/assets/pixel_ship_yellow.png"))
 
 # lasers
 RED_LASERS = pygame.image.load("Juan_David/assets/pixel_laser_red.png")
@@ -20,7 +20,7 @@ BLUE_LASERS = pygame.image.load("Juan_David/assets/pixel_laser_blue.png")
 YELLOW_LASERS = pygame.image.load("Juan_David/assets/pixel_laser_yellow.png")
 
 # background
-BG = pygame.transform.scale(pygame.image.load("Juan_David/assets/background-black.png"), (WIDTH, HEIGHT))
+BG = pygame.transform.scale(pygame.image.load("assets", "pixel_ship_yellow.png"), (WIDTH, HEIGHT))
 
 
 class Ship:
@@ -34,7 +34,16 @@ class Ship:
         self.cool_down_counter = 0
 
     def draw(self, window):
-        pygame.draw.rect(window, (255,0,0), (self.x, self.y, 50, 50))
+        window.blit(self.ship_img, (self.x, self.y))
+
+
+class Player(Ship):
+    def _init_(self, x, y, health=100):
+        super()._init_(x, y, health)
+        self.ship_img = YELLOW_SPACE_SHIP
+        self.laser_img = YELLOW_LASERS
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
 
 def main():
     run = True
@@ -42,6 +51,10 @@ def main():
     level = 1
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+
+    player_vel = 5
+
+    player = Player(250, 400)
 
     clock = pygame.time.Clock()
 
@@ -54,6 +67,8 @@ def main():
         WIN.blit(lives_label, (10, 10))
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
 
+        player.draw(WIN)
+
         pygame.display.update()
 
     while run:
@@ -63,5 +78,15 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            
+
+        keys = pygame.key.get_pressed()   
+        if keys[pygame.K_a] and player.x - player_vel > 0: # left
+            player.x -= player_vel
+        if keys[pygame.K_d] and player.x + player_vel + 50 < WIDTH: # right
+            player.x += player_vel
+        if keys[pygame.K_w] and player.y - player_vel > 0: # up
+            player.y -= player_vel
+        if keys[pygame.K_s] and player.y + player_vel + 50 < HEIGHT: # down
+            player.y += player_vel
+
 main()
